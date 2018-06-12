@@ -7,9 +7,9 @@
 
 
 ggradar <- function(plot.data,
-                             font.radar="Circular Air Light",
-                             values.radar = c("0%", "50%", "100%"),                       
-                             axis.labels=colnames(plot.data)[-1],                             
+                             font.radar="Arial",
+                             values.radar = c("0%", "50%", "100%"),
+                             axis.labels=colnames(plot.data)[-1],
                              grid.min=0,  #10,
                              grid.mid=0.5,  #50,
                              grid.max=1,  #100,
@@ -50,7 +50,7 @@ ggradar <- function(plot.data,
   plot.data[,1] <- as.factor(as.character(plot.data[,1]))
   names(plot.data)[1] <- "group"
 
-  var.names <- colnames(plot.data)[-1]  #'Short version of variable names 
+  var.names <- colnames(plot.data)[-1]  #'Short version of variable names
   #axis.labels [if supplied] is designed to hold 'long version' of variable names
   #with line-breaks indicated using \n
 
@@ -59,8 +59,8 @@ ggradar <- function(plot.data,
   plot.extent.y=(grid.max+abs(centre.y))*plot.extent.y.sf
 
   #Check supplied data makes sense
-  if (length(axis.labels) != ncol(plot.data)-1) 
-    return("Error: 'axis.labels' contains the wrong number of axis labels") 
+  if (length(axis.labels) != ncol(plot.data)-1)
+    return("Error: 'axis.labels' contains the wrong number of axis labels")
   if(min(plot.data[,-1])<centre.y)
     return("Error: plot.data' contains value(s) < centre.y")
   if(max(plot.data[,-1])>grid.max)
@@ -89,12 +89,12 @@ CalculateGroupPath <- function(df) {
       #pathData[,j]= pathData[,j]
 
 
-      graphData=rbind(graphData, data.frame(group=i, 
+      graphData=rbind(graphData, data.frame(group=i,
                                             x=pathData[,j]*sin(angles[j-1]),
                                             y=pathData[,j]*cos(angles[j-1])))
     }
     ##complete the path by repeating first pair of coords in the path
-    graphData=rbind(graphData, data.frame(group=i, 
+    graphData=rbind(graphData, data.frame(group=i,
                                           x=pathData[,2]*sin(angles[1]),
                                           y=pathData[,2]*cos(angles[1])))
   }
@@ -139,7 +139,7 @@ funcCircleCoords <- function(center = c(0,0), r = 1, npoints = 100){
 }
 
 ### Convert supplied data into plottable format
-  # (a) add abs(centre.y) to supplied plot data 
+  # (a) add abs(centre.y) to supplied plot data
   #[creates plot centroid of 0,0 for internal use, regardless of min. value of y
   # in user-supplied data]
   plot.data.offset <- plot.data
@@ -189,7 +189,7 @@ funcCircleCoords <- function(center = c(0,0), r = 1, npoints = 100){
 
 # Declare 'theme_clear', with or without a plot legend as required by user
 #[default = no legend if only 1 group [path] being plotted]
-theme_clear <- theme_bw(base_size=20) + 
+theme_clear <- theme_bw(base_size=20) +
   theme(axis.text.y=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks=element_blank(),
@@ -204,17 +204,17 @@ if (plot.legend==FALSE) theme_clear <- theme_clear + theme(legend.position="none
 # [need to declare plot extent as well, since the axis labels don't always
 # fit within the plot area automatically calculated by ggplot, even if all
 # included in first plot; and in any case the strategy followed here is to first
-# plot right-justified labels for axis labels to left of Y axis for x< (-x.centre.range)], 
-# then centred labels for axis labels almost immediately above/below x= 0 
+# plot right-justified labels for axis labels to left of Y axis for x< (-x.centre.range)],
+# then centred labels for axis labels almost immediately above/below x= 0
 # [abs(x) < x.centre.range]; then left-justified axis labels to right of Y axis [x>0].
-# This building up the plot in layers doesn't allow ggplot to correctly 
+# This building up the plot in layers doesn't allow ggplot to correctly
 # identify plot extent when plotting first (base) layer]
 
 #base layer = axis labels for axes to left of central y-axis [x< -(x.centre.range)]
 base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
   geom_text(data=subset(axis$label,axis$label$x < (-x.centre.range)),
             aes(x=x,y=y,label=text),size=axis.label.size,hjust=1, family=font.radar) +
-  scale_x_continuous(limits=c(-1.5*plot.extent.x,1.5*plot.extent.x)) + 
+  scale_x_continuous(limits=c(-1.5*plot.extent.x,1.5*plot.extent.x)) +
   scale_y_continuous(limits=c(-plot.extent.y,plot.extent.y))
 
   # + axis labels for any vertical axes [abs(x)<=x.centre.range]
@@ -264,16 +264,16 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
   if (!is.null(group.colours)){
     colour_values=rep(group.colours,100)
   } else {
-    colour_values=rep(c("#FF5A5F", "#FFB400", "#007A87",  "#8CE071", "#7B0051", 
+    colour_values=rep(c("#FF5A5F", "#FFB400", "#007A87",  "#8CE071", "#7B0051",
                        "#00D1C1", "#FFAA91", "#B4A76C", "#9CA299", "#565A5C", "#00A04B", "#E54C20"), 100)
   }
-  
+
   base <- base + theme(legend.key.width=unit(3,"line")) + theme(text = element_text(size = 20,
                                                                                       family = font.radar)) +
   theme(legend.text = element_text(size = legend.text.size), legend.position="left") +
   theme(legend.key.height=unit(2,"line")) +
   scale_colour_manual(values=colour_values) +
-  theme(text=element_text(family=font.radar)) + 
+  theme(text=element_text(family=font.radar)) +
   theme(legend.title=element_blank())
 
   if (plot.title != "") {
